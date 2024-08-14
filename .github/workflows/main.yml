@@ -16,15 +16,14 @@ jobs:
         id: changelog
         run: |
           # Extract the content under the most recent version header in CHANGELOG.md
-          # This regex matches the latest version section and captures everything until the next version or end of file
-          LATEST_VERSION=$(awk '/^##/{if (p) exit; p=1} p' CHANGELOG.md)
+          CHANGELOG=$(awk 'f{print} /^## /{if(f) exit; f=1}' CHANGELOG.md)
           
-          # Ensure proper formatting by replacing newlines with spaces and escaping double quotes
-          FORMATTED_CHANGELOG=$(echo "$LATEST_VERSION" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
-
-          # Output the formatted changelog content to the environment file
+          # Debugging: Print the extracted changelog content
+          echo "$CHANGELOG"
+          
+          # Write the extracted changelog to the environment file
           echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_ENV
-          echo "$FORMATTED_CHANGELOG" >> $GITHUB_ENV
+          echo "$CHANGELOG" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Send to Slack via Webhook
@@ -37,13 +36,18 @@ jobs:
           -H 'Content-type: application/json' \
           --data '{
             "text": "Here is the latest changelog:",
-            "blocks": [
+            "attachments": [
               {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": ```'"$CHANGELOG_CONTENT"'```
-                }
+                "color": "#36a64f",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "'"$CHANGELOG_CONTENT"'"
+                    }
+                  }
+                ]
               }
             ]
           }'
