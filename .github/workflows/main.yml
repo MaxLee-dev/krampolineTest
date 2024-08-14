@@ -44,7 +44,7 @@ jobs:
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",
-                      "text": "'"$CHANGELOG_CONTENT"'"
+                      "text": "test"
                     }
                   }
                 ]
