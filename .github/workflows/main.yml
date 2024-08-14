@@ -4,40 +4,36 @@ on:
   push:
     branches:
       - main
+
 jobs:
   post_changelog_to_slack:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
-        with:
-          node-version: '20'  # Node.js 20 강제로 설정
-
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Verify Node.js version
-        run: node -v
 
       - name: Read the latest CHANGELOG entry
         id: changelog
         run: |
-            # Extract the content under the most recent version header in CHANGELOG.md
-            CHANGELOG=$(awk 'f{print} /^## /{if(f) exit; f=1}' CHANGELOG.md)
-            
-            # Print the extracted changelog for debugging
-            echo "$CHANGELOG"
-        
-            # Set the extracted changelog as an environment variable using Environment Files
-            echo "CHANGELOG_CONTENT=$CHANGELOG" >> $GITHUB_ENV
+          # Extract the content under the most recent version header in CHANGELOG.md
+          CHANGELOG=$(awk 'f{print} /^## /{if(f) exit; f=1}' CHANGELOG.md)
+          
+          # Debugging: Print the extracted changelog content
+          echo "$CHANGELOG"
+          
+          # Write the extracted changelog to the environment file
+          echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Send to Slack via Webhook
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          CHANGELOG_CONTENT: ${{ env.CHANGELOG_CONTENT }}  # 환경 변수 참조
+          CHANGELOG_CONTENT: ${{ env.CHANGELOG_CONTENT }}
         run: |
+          echo "Sending the following content to Slack:"
+          echo "$CHANGELOG_CONTENT"
+          
           curl -X POST $SLACK_WEBHOOK_URL \
           -H 'Content-type: application/json' \
           --data '{"text": "'"$CHANGELOG_CONTENT"'"}'
