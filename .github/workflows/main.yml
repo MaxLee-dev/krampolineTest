@@ -1,0 +1,29 @@
+name: Post CHANGELOG to Slack
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  post_changelog_to_slack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Read the latest CHANGELOG entry
+        id: changelog
+        run: |
+          # Read the CHANGELOG.md file and extract the latest entry
+          CHANGELOG=$(awk '/^##/{if (p) exit; p=1} p' CHANGELOG.md)
+          echo "$CHANGELOG"
+          echo "::set-output name=changelog::$CHANGELOG"
+
+      - name: Send to Slack via Webhook
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST $SLACK_WEBHOOK_URL \
+          -H 'Content-type: application/json' \
+          --data '{"text": "'"${{ steps.changelog.outputs.changelog }}"'"}'
