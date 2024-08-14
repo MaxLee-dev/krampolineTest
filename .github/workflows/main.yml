@@ -24,15 +24,19 @@ jobs:
       - name: Read the latest CHANGELOG entry
         id: changelog
         run: |
-          # Extract the content under the most recent version header in CHANGELOG.md
-          CHANGELOG=$(awk 'f{print} /^## /{if(f) exit; f=1}' CHANGELOG.md)
-          echo "$CHANGELOG"
-          echo "::set-output name=changelog::$CHANGELOG"
+            # Extract the content under the most recent version header in CHANGELOG.md
+            CHANGELOG=$(awk 'f{print} /^## /{if(f) exit; f=1}' CHANGELOG.md)
+            
+            # Print the extracted changelog for debugging
+            echo "$CHANGELOG"
+        
+            # Set the extracted changelog as an environment variable using Environment Files
+            echo "CHANGELOG_CONTENT=$CHANGELOG" >> $GITHUB_ENV
 
       - name: Send to Slack via Webhook
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.changelog }}
+          CHANGELOG_CONTENT: ${{ env.CHANGELOG_CONTENT }}  # 환경 변수 참조
         run: |
           curl -X POST $SLACK_WEBHOOK_URL \
           -H 'Content-type: application/json' \
