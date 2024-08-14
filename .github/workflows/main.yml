@@ -12,17 +12,31 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
+      - name: Verify CHANGELOG.md exists
+        run: |
+          if [ ! -f "CHANGELOG.md" ]; then
+            echo "CHANGELOG.md not found!"
+            exit 1
+          else
+            echo "CHANGELOG.md found."
+          fi
+
       - name: Read the latest CHANGELOG entry
         id: changelog
         run: |
-          # Extract the section for the latest version (e.g., 0.9.0 in this example)
+          # Debugging: Check the contents of CHANGELOG.md
+          echo "Content of CHANGELOG.md:"
+          cat CHANGELOG.md  # Output the entire file to the GitHub Actions log
+
+          # Extract the section for the latest version (e.g., 0.9.0)
           CHANGELOG=$(awk '/^## \[0\.9\.0\]/{flag=1;next}/^## \[/{flag=0}flag' CHANGELOG.md)
+          
           echo "Extracted CHANGELOG content:"
-          echo "$CHANGELOG"  # Debugging: output the changelog content
+          echo "$CHANGELOG"  # Debugging: Output the extracted changelog content
           
           # Check if the content is empty
           if [ -z "$CHANGELOG" ]; then
-            echo "No content extracted from CHANGELOG.md"
+            echo "No content extracted from CHANGELOG.md for version 0.9.0"
             exit 1
           fi
 
@@ -33,7 +47,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           CHANGELOG_CONTENT: ${{ steps.changelog.outputs.changelog }}
         run: |
-          echo "Sending the following content to Slack:"  # Debugging: print content before sending
+          echo "Sending the following content to Slack:"
           echo "$CHANGELOG_CONTENT"
           
           if [ -z "$CHANGELOG_CONTENT" ]; then
