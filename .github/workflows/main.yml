@@ -31,9 +31,23 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           CHANGELOG_CONTENT: ${{ env.CHANGELOG_CONTENT }}
         run: |
-          echo "Sending the following content to Slack:"
-          echo "$CHANGELOG_CONTENT"
-          
+          # Send the changelog content to Slack in markdown format
           curl -X POST $SLACK_WEBHOOK_URL \
           -H 'Content-type: application/json' \
-          --data '{"text": "'"$CHANGELOG_CONTENT"'"}'
+          --data '{
+            "text": "Here is the latest changelog:",
+            "attachments": [
+              {
+                "color": "#36a64f",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "'"$CHANGELOG_CONTENT"'"
+                    }
+                  }
+                ]
+              }
+            ]
+          }'
