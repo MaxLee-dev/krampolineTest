@@ -20,15 +20,10 @@ jobs:
           echo "$CHANGELOG"
           echo "::set-output name=changelog::$CHANGELOG"
 
-      - name: Post to Slack
+      - name: Send to Slack via Webhook
         env:
-          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          curl -X POST https://slack.com/api/chat.postMessage \
-          -H "Authorization: Bearer $SLACK_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d '{
-            "channel": "CHANNEL_ID",
-            "text": "'"${{ steps.changelog.outputs.changelog }}"'",
-            "thread_ts": "MESSAGE_TS"
-          }'
+          curl -X POST $SLACK_WEBHOOK_URL \
+          -H 'Content-type: application/json' \
+          --data '{"text": "'"${{ steps.changelog.outputs.changelog }}"'"}'
