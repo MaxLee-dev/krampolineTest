@@ -10,20 +10,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Read the latest CHANGELOG entry
         id: changelog
         run: |
-          # Read the CHANGELOG.md file and extract the latest entry
+          # Extract the section for the latest version (e.g., 0.9.0 in this example)
           CHANGELOG=$(awk '/^## \[0\.9\.0\]/{flag=1;next}/^## \[/{flag=0}flag' CHANGELOG.md)
-          echo "$CHANGELOG"
+          echo "Extracted CHANGELOG content:"
+          echo "$CHANGELOG"  # Debugging: output the changelog content
+          
+          # Check if the content is empty
+          if [ -z "$CHANGELOG" ]; then
+            echo "No content extracted from CHANGELOG.md"
+            exit 1
+          fi
+
           echo "::set-output name=changelog::$CHANGELOG"
 
       - name: Send to Slack via Webhook
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.changelog }}
         run: |
+          echo "Sending the following content to Slack:"  # Debugging: print content before sending
+          echo "$CHANGELOG_CONTENT"
+          
+          if [ -z "$CHANGELOG_CONTENT" ]; then
+            echo "No content to send to Slack."
+            exit 1
+          fi
+          
           curl -X POST $SLACK_WEBHOOK_URL \
           -H 'Content-type: application/json' \
-          --data '{"text": "'"${{ steps.changelog.outputs.changelog }}"'"}'
+          --data '{"text": "'"$CHANGELOG_CONTENT"'"}'
