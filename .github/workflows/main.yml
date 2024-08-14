@@ -16,14 +16,15 @@ jobs:
         id: changelog
         run: |
           # Extract the content under the most recent version header in CHANGELOG.md
-          CHANGELOG=$(awk '/^##/{if (p) exit; p=1} p' CHANGELOG.md)
+          # This regex matches the latest version section and captures everything until the next version or end of file
+          LATEST_VERSION=$(awk '/^##/{if (p) exit; p=1} p' CHANGELOG.md)
           
-          # Debugging: Print the extracted changelog content
-          echo "$CHANGELOG"
-          
-          # Write the extracted changelog to the environment file
+          # Ensure proper formatting by replacing newlines with spaces and escaping double quotes
+          FORMATTED_CHANGELOG=$(echo "$LATEST_VERSION" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
+
+          # Output the formatted changelog content to the environment file
           echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_ENV
-          echo "$CHANGELOG" >> $GITHUB_ENV
+          echo "$FORMATTED_CHANGELOG" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Send to Slack via Webhook
@@ -31,9 +32,6 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           CHANGELOG_CONTENT: ${{ env.CHANGELOG_CONTENT }}
         run: |
-          # Format the changelog content for Slack
-          FORMATTED_CHANGELOG=$(echo "${CHANGELOG_CONTENT}" | sed 's/"/\\"/g')
-          
           # Send the changelog content to Slack in markdown format
           curl -X POST $SLACK_WEBHOOK_URL \
           -H 'Content-type: application/json' \
@@ -44,7 +42,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "'"${FORMATTED_CHANGELOG}"'"
+                  "text": "'"$CHANGELOG_CONTENT"'"
                 }
               }
             ]
