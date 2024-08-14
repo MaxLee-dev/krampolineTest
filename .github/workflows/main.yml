@@ -23,10 +23,7 @@ jobs:
       - name: Send to Slack via Webhook
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          CHANGELOG_CONTENT: ${{ steps.changelog.outputs.changelog }}
         run: |
-          echo "Sending the following content to Slack:"  # Debugging: print content before sending
-          echo "$CHANGELOG_CONTENT"
           curl -X POST $SLACK_WEBHOOK_URL \
           -H 'Content-type: application/json' \
-          --data '{"text": "'"$CHANGELOG_CONTENT"'"}'
+          --data '{"text": "'"${{ steps.changelog.outputs.changelog }}"'"}'
