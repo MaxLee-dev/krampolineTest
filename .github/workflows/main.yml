@@ -16,7 +16,7 @@ jobs:
         id: changelog
         run: |
           # Extract the content under the most recent version header in CHANGELOG.md
-          CHANGELOG=$(awk 'f{print} /^## /{if(f) exit; f=1}' CHANGELOG.md)
+          CHANGELOG=$(awk '/^##/{if (p) exit; p=1} p' CHANGELOG.md)
           
           # Debugging: Print the extracted changelog content
           echo "$CHANGELOG"
@@ -31,23 +31,21 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           CHANGELOG_CONTENT: ${{ env.CHANGELOG_CONTENT }}
         run: |
+          # Format the changelog content for Slack
+          FORMATTED_CHANGELOG=$(echo "${CHANGELOG_CONTENT}" | sed 's/"/\\"/g')
+          
           # Send the changelog content to Slack in markdown format
           curl -X POST $SLACK_WEBHOOK_URL \
           -H 'Content-type: application/json' \
           --data '{
             "text": "Here is the latest changelog:",
-            "attachments": [
+            "blocks": [
               {
-                "color": "#36a64f",
-                "blocks": [
-                  {
-                    "type": "section",
-                    "text": {
-                      "type": "mrkdwn",
-                      "text": "'"$CHANGELOG_CONTENT"'"
-                    }
-                  }
-                ]
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "'"${FORMATTED_CHANGELOG}"'"
+                }
               }
             ]
           }'
