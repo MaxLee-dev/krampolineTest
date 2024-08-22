@@ -31,6 +31,9 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           CHANGELOG_CONTENT: ${{ env.CHANGELOG_CONTENT }}
         run: |
+          # Escape double quotes in the changelog content to avoid JSON syntax errors
+          ESCAPED_CHANGELOG_CONTENT=$(echo "$CHANGELOG_CONTENT" | sed 's/"/\\"/g')
+
           # Send the changelog content to Slack in markdown format
           curl -X POST $SLACK_WEBHOOK_URL \
           -H 'Content-type: application/json' \
@@ -44,7 +47,7 @@ jobs:
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",
-                      "text": "'"${{ env.CHANGELOG_CONTENT }}"'"
+                      "text": "'"${ESCAPED_CHANGELOG_CONTENT}"'"
                     }
                   }
                 ]
