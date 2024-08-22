@@ -30,10 +30,16 @@ jobs:
           echo "$CHANGELOG"
 
           # Replace markdown URLs with Slack format URLs
-          CHANGELOG=$(echo "$CHANGELOG" | sed -E 's/\\?([[][^]]+]\\?)\\?[(]([^()]+)\\?[)]/<\2|\1>/g')
+          CHANGELOG=$(echo "$CHANGELOG" | sed -E 's/\[([^\]]+)\]\(([^()]+)\)/<\2|\1>/g')
 
-          # Debugging: Print the changelog after URL conversion
-          echo "After URL Conversion:"
+          # Remove '#' character before numbers in URLs and remove square brackets around it
+          CHANGELOG=$(echo "$CHANGELOG" | sed -E 's/#([0-9]+)/\1/g')
+
+          # Convert section titles like "### Documentation" to bold "Documentation"
+          CHANGELOG=$(echo "$CHANGELOG" | sed -E 's/^### (.+)/*\1*/')
+
+          # Debugging: Print the changelog after URL conversion and formatting
+          echo "After URL and Section Formatting:"
           echo "$CHANGELOG"
 
           # Write the modified changelog to the environment file
