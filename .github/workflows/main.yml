@@ -31,8 +31,6 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           CHANGELOG_CONTENT: ${{ env.CHANGELOG_CONTENT }}
         run: |
-          curl -X POST --data-urlencode "payload={\"username\": \"GDS-bot\", "attachments":[{"pretext":	'*@vapor-alarm* Vapor Packages 0.9.0가 릴리즈 됐습니다 :tada:',"color": '#5094FA',"fields": [{ title: 'Change Log', value: "'"$CHANGELOG_CONTENT"'", short: false }],},] }" "${{ secrets.SLACK_WEB_HOOK_INTERNAL }}"
-        
           # Send the changelog content to Slack in markdown format
           curl -X POST $SLACK_WEBHOOK_URL \
           -H 'Content-type: application/json' \
@@ -46,7 +44,7 @@ jobs:
                     "type": "section",
                     "text": {
                       "type": "mrkdwn",
-                      "text": "'"$CHANGELOG_CONTENT"'"
+                      "text": "'"${{ env.CHANGELOG_CONTENT }}"'"
                     }
                   }
                 ]
