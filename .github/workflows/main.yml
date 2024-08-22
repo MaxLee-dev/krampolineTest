@@ -26,6 +26,8 @@ jobs:
           CHANGELOG=$(echo "$CHANGELOG" | sed 's/\*\*/\*/g')
 
           # Replace markdown URLs with Slack format URLs
+          # Example: [#418](https://github.com/goorm-dev/gds/pull/418) -> <https://github.com/goorm-dev/gds/pull/418|#418>
+          # Example: [aab58f7](https://github.com/goorm-dev/gds/commit/aab58f7) -> <https://github.com/goorm-dev/gds/commit/aab58f7|aab58f7>
           CHANGELOG=$(echo "$CHANGELOG" | sed -E 's/\[([^\]]+)\]\(([^)]+)\)/<\2|\1>/g')
 
           # Debugging: Print the changelog after transformations
