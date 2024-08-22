@@ -22,6 +22,8 @@ jobs:
           echo "Original CHANGELOG:"
           echo "$CHANGELOG"
           
+          CHANGELOG=$(echo "$CHANGELOG" | sed -E 's/^### (.+)/*\1*/')
+          
           # Replace "**" with "*" for bold to italic conversion in Slack
           CHANGELOG=$(echo "$CHANGELOG" | sed 's/\*\*/\*/g')
 
