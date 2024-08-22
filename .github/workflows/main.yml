@@ -21,7 +21,13 @@ jobs:
           # Debugging: Print the extracted changelog content
           echo "$CHANGELOG"
           
-          # Write the extracted changelog to the environment file
+          # Replace "**" with "*" for bold text conversion to italic in Slack
+          CHANGELOG=$(echo "$CHANGELOG" | sed 's/\*\*/\*/g')
+
+          # Replace markdown URLs with Slack format URLs
+          CHANGELOG=$(echo "$CHANGELOG" | sed -E 's/\[([^\]]+)\]\(([^)]+)\)/<\2|\1>/g')
+
+          # Write the modified changelog to the environment file
           echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_ENV
           echo "$CHANGELOG" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
