@@ -19,19 +19,21 @@ jobs:
           CHANGELOG=$(awk '/^## \[.*\]/ {if (p) exit; p=1} p' CHANGELOG.md)
           
           # Debugging: Print the extracted changelog content
-          echo "Extracted CHANGELOG:"
+          echo "Original CHANGELOG:"
           echo "$CHANGELOG"
           
           # Replace "**" with "*" for bold to italic conversion in Slack
           CHANGELOG=$(echo "$CHANGELOG" | sed 's/\*\*/\*/g')
 
-          # Replace markdown URLs with Slack format URLs
-          # Example: [#418](https://github.com/goorm-dev/gds/pull/418) -> <https://github.com/goorm-dev/gds/pull/418|#418>
-          # Example: [aab58f7](https://github.com/goorm-dev/gds/commit/aab58f7) -> <https://github.com/goorm-dev/gds/commit/aab58f7|aab58f7>
-          CHANGELOG=$(echo "$CHANGELOG" | sed -E 's/\[([^\]]+)\]\(([^)]+)\)/<\2|\1>/g')
+          # Debugging: Print the changelog after bold to italic conversion
+          echo "After Bold to Italic Conversion:"
+          echo "$CHANGELOG"
 
-          # Debugging: Print the changelog after transformations
-          echo "Transformed CHANGELOG:"
+          # Replace markdown URLs with Slack format URLs
+          CHANGELOG=$(echo "$CHANGELOG" | sed -E 's/\\?([[][^]]+]\\?)\\?[(]([^()]+)\\?[)]/<\2|\1>/g')
+
+          # Debugging: Print the changelog after URL conversion
+          echo "After URL Conversion:"
           echo "$CHANGELOG"
 
           # Write the modified changelog to the environment file
@@ -46,6 +48,10 @@ jobs:
         run: |
           # Escape double quotes in the changelog content to avoid JSON syntax errors
           ESCAPED_CHANGELOG_CONTENT=$(echo "$CHANGELOG_CONTENT" | sed 's/"/\\"/g')
+
+          # Debugging: Print the escaped changelog content
+          echo "Escaped CHANGELOG_CONTENT:"
+          echo "$ESCAPED_CHANGELOG_CONTENT"
 
           # Send the changelog content to Slack in markdown format
           curl -X POST $SLACK_WEBHOOK_URL \
