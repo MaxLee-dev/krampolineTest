@@ -79,4 +79,4 @@ jobs:
                 ]
               }
             ]
-          }" "$SLACK_WEB_HOOK_INTERNAL"
+          }" "${{ secrets.SLACK_WEB_HOOK_INTERNAL }}"
