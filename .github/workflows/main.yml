@@ -56,15 +56,8 @@ jobs:
             \"username\": \"GDS-bot\", 
             \"attachments\": [
               {
-                \"pretext\": \"*@vapor-alarm* Vapor Packages 0.11.1가 릴리즈 됐습니다 :tada:\",
+                \"pretext\": \"*@vapor-alarm* Vapor Packages 0.11.1<https://gds.goorm.io/?path=/story/changelog--page|gds.goorm.io>가 릴리즈 됐습니다 :tada:\",
                 \"color\": \"#5094FA\",
-                \"fields\": [
-                  {
-                    \"title\": \"Change Log\", 
-                    \"value\": \"<https://gds.goorm.io/?path=/story/changelog--page|gds.goorm.io>\", 
-                    \"short\": false
-                  }
-                ]
               },
               {
                 \"color\": \"#36a64f\",
