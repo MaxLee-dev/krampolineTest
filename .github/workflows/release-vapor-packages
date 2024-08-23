@@ -1,0 +1,6 @@
+name: Release Vapor Packages
+
+on:
+  push:
+    branches:
+      - main 
