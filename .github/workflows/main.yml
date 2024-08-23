@@ -1,10 +1,10 @@
-name: Post CHANGELOG to Slack
+name: Send Slack Success Message
 
 on:
-  push:
-    branches:
-      - main
-
+  workflow_run:
+    workflows: ["Release Vapor Packages"]
+    types:
+      - completed
 jobs:
   post_changelog_to_slack:
     runs-on: ubuntu-latest
