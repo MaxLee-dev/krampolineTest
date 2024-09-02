@@ -6,7 +6,7 @@ on:
     types:
       - completed
 jobs:
-  post_changelog_to_slack:
+  on-success:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
