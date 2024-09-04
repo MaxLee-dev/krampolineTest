@@ -2,7 +2,7 @@ name: '[CD] Vapor Changelog Slack 알림'
 
 on:
   workflow_run:
-    workflows: ["[CD] Vapor 릴리즈"]
+    workflows: ["Release Vapor Packages"]
     types:
       - completed
 
