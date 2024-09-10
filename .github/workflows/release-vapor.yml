@@ -1,4 +1,4 @@
-name: "Vapor Release"
+name: "Vapor Release 한글 테스트"
 
 on:
   push:
