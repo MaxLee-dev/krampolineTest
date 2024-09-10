@@ -1,4 +1,4 @@
-name: Release Vapor Packages
+name: [CD] Vapor 릴리즈
 
 on:
   push:
