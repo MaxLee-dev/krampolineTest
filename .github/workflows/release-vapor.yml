@@ -1,4 +1,4 @@
-name: "Vapor Release 한글 테스트"
+name: "[CD] Vapor Changelog Slack 알림12"
 
 on:
   push:
