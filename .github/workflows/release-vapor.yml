@@ -1,4 +1,4 @@
-name: [CD] Vapor 릴리즈
+name: "[CD] Vapor 릴리즈"
 
 on:
   push:
