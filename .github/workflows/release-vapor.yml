@@ -1,4 +1,4 @@
-name: "Vapor Release"
+name: "[CD] Vapor Release"
 
 on:
   push:
