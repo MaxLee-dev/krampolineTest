@@ -3,9 +3,9 @@ name: "[CD] Vapor Changelog Slack 알림"
 on:
   workflow_run:
     workflows:
-      - "Vapor Release"
+      - "[CD] Vapor Release"
     types:
-      - success
+      - completed
 jobs:
   on-success:
     runs-on: ubuntu-latest
